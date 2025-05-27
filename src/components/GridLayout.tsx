@@ -80,6 +80,9 @@ const GridLayout: React.FC = () => {
       "cib_ids": [
         "25financial.com",
         "acadviser.com",
+        "almanackip.com",
+        "25financial.com",
+        "acadviser.com",
         "almanackip.com"
       ],
       "orient": "records"
@@ -109,7 +112,7 @@ const GridLayout: React.FC = () => {
             headquarter: row.hq,
             headquarter_detail: row.hq,
             year_founded: 'Founded in 1997', // You can replace this with actual year if needed
-            aum: parseFloat(row.AUM.replace(',', '.')).toFixed(2) + 'bn',
+            aum: row.AUM + 'bn',
             customOverview: renderOverviewAsText(overview),
             locations: locationResponse.data.map((loc: any) => ({
               lat: loc.lat,
@@ -182,6 +185,8 @@ const GridLayout: React.FC = () => {
 
   const exportToPPTx = async () => {
       const pptx = new pptxgen();
+
+      setLoading(true);
 
       // Create slide
       let slide = pptx.addSlide();
@@ -270,7 +275,7 @@ const GridLayout: React.FC = () => {
         currentY += rowHeight + 0.5;
 
         // Add new slide if needed
-        if (currentY > 6.5) {
+        if (currentY > 5) {
           slide = pptx.addSlide();
           currentY = 0.5;
           addHeaders(slide, colWidths, marginLeft, currentY, headers);
@@ -280,153 +285,157 @@ const GridLayout: React.FC = () => {
 
       // Save the PPTX file
       pptx.writeFile({ fileName: 'TableExport.pptx' });
+
+      setLoading(false);
   };
 
 
   return (
     <div>
-      {loading ? (
-        <h1>Loading</h1>
-      ) : (
-        <div className="min-h-screen bg-gray-100 p-6 mb-5">
+      <div className="min-h-screen bg-gray-100 p-6 mb-5">
+      {
+        loading ? (
+          <h1>Loading</h1>
+        ) : (
           <button
             onClick={exportToPPTx}
           >Export to PPTX</button>
-          <div className="max-w-[2000px] mx-auto">
-            <div className="grid grid-cols-5 gap-2">
-              {/* Left side - Checkboxes */}
-              <div className="col-span-1 bg-white rounded-lg shadow p-4">
-                <div className="mb-4">
-                  {/* Headers */}
-                  <div className="grid grid-cols-3 mb-4">
-                    <div className="text-sm font-semibold text-gray-700"></div>
-                    <div className="text-sm font-semibold text-gray-700 text-center">Columns</div>
-                    <div className="text-sm font-semibold text-gray-700 text-center">
-                      Bullet in<br />overview
-                    </div>
-                  </div>
-
-                  {/* Checkbox rows */}
-                  <div className="space-y-2">
-                    {checkboxes.map((checkbox) => (
-                      <div key={checkbox.id} className="grid grid-cols-3 items-center">
-                        <div className="text-sm text-gray-700 pr-2">{checkbox.label}</div>
-                        <div className="flex justify-center">
-                          {checkbox.inColumns && (
-                            <input
-                              type="checkbox"
-                              id={`checkbox-columns-${checkbox.id}`}
-                              checked={checkbox.checkedColumns}
-                              onChange={() => handleCheckboxChange(checkbox.id, 'columns')}
-                              className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                            />
-                          )}
-                        </div>
-                        <div className="flex justify-center">
-                          {checkbox.inBullets && (
-                            <input
-                              type="checkbox"
-                              id={`checkbox-bullets-${checkbox.id}`}
-                              checked={checkbox.checkedBullets}
-                              onChange={() => handleCheckboxChange(checkbox.id, 'bullets')}
-                              className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
-                            />
-                          )}
-                        </div>
-                      </div>
-                    ))}
+        )
+      }
+        <div className="max-w-[2000px] mx-auto">
+          <div className="grid grid-cols-5 gap-2">
+            {/* Left side - Checkboxes */}
+            <div className="col-span-1 bg-white rounded-lg shadow p-4">
+              <div className="mb-4">
+                {/* Headers */}
+                <div className="grid grid-cols-3 mb-4">
+                  <div className="text-sm font-semibold text-gray-700"></div>
+                  <div className="text-sm font-semibold text-gray-700 text-center">Columns</div>
+                  <div className="text-sm font-semibold text-gray-700 text-center">
+                    Bullet in<br />overview
                   </div>
                 </div>
-              </div>
 
-              {/* Right side - Table */}
-              <div className="col-span-4 bg-white rounded-lg shadow overflow-x-auto p-4">
-                <table className="min-w-full border-separate border-spacing-2">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
-                        Company
-                      </th>
-                      <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
-                        Headquarter
-                      </th>
-                      <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
-                        Headquarter Detail
-                      </th>
-                      <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
-                        Year founded
-                      </th>
-                      <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
-                        AUM
-                      </th>
-                      <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[350px]">
-                        Overview
-                      </th>
-                      <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[200px]">
-                        Geographic presence
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {data.map((row, index) => (
-                      <tr
-                        key={index}
-                        ref={(el) => {
-                          if (el) rowRefs.current[index] = el;
-                        }}
-                      >
-                        <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
-                          {row.company}
-                        </td>
-                        <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white px-10">
-                          <CountryFlag countryCode='us' />
-                        </td>
-                        <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
-                          {row.headquarter_detail || 'No data available'}
-                        </td>
-                        <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
-                          {row.year_founded || 'No data available'}
-                        </td>
-                        <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
-                          ${row.aum}
-                        </td>
-                        <td
-                          className="px-3 py-2 text-sm text-gray-500 border border-black rounded-lg bg-white"
-                          style={{ height: maxRowHeight }}
-                        >
-                          <textarea
-                            value={row.customOverview}
-                            onChange={(e) => {
-                              const updated = [...data];
-                              updated[index].customOverview = e.target.value;
-                              setData(updated);
-
-                              // Auto-resize logic
-                              e.target.style.height = 'auto';
-                              e.target.style.height = `${e.target.scrollHeight}px`;
-                            }}
-                            className="w-full resize-none bg-white border-none focus:outline-none text-[12px] overflow-hidden"
-                            style={{ height: '100px' }} // or any base height
+                {/* Checkbox rows */}
+                <div className="space-y-2">
+                  {checkboxes.map((checkbox) => (
+                    <div key={checkbox.id} className="grid grid-cols-3 items-center">
+                      <div className="text-sm text-gray-700 pr-2">{checkbox.label}</div>
+                      <div className="flex justify-center">
+                        {checkbox.inColumns && (
+                          <input
+                            type="checkbox"
+                            id={`checkbox-columns-${checkbox.id}`}
+                            checked={checkbox.checkedColumns}
+                            onChange={() => handleCheckboxChange(checkbox.id, 'columns')}
+                            className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
                           />
-                        </td>
-                        <td className="text-sm text-gray-500 font-[10px] border border-black rounded-lg bg-white">
-                        {
-                          row.locations.length > 0 ? (
-                            <WorldMap locations={row.locations} />
-                          ) : (
-                            <span>No location data</span>
-                          )
-                        }
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+                        )}
+                      </div>
+                      <div className="flex justify-center">
+                        {checkbox.inBullets && (
+                          <input
+                            type="checkbox"
+                            id={`checkbox-bullets-${checkbox.id}`}
+                            checked={checkbox.checkedBullets}
+                            onChange={() => handleCheckboxChange(checkbox.id, 'bullets')}
+                            className="h-4 w-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                          />
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
+            </div>
+
+            {/* Right side - Table */}
+            <div className="col-span-4 bg-white rounded-lg shadow overflow-x-auto p-4">
+              <table className="min-w-full border-separate border-spacing-2">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
+                      Company
+                    </th>
+                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
+                      Headquarter
+                    </th>
+                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
+                      Headquarter Detail
+                    </th>
+                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
+                      Year founded
+                    </th>
+                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
+                      AUM
+                    </th>
+                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[350px]">
+                      Overview
+                    </th>
+                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[200px]">
+                      Geographic presence
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.map((row, index) => (
+                    <tr
+                      key={index}
+                      ref={(el) => {
+                        if (el) rowRefs.current[index] = el;
+                      }}
+                    >
+                      <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
+                        {row.company}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white px-10">
+                        <CountryFlag countryCode='us' />
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
+                        {row.headquarter_detail || 'No data available'}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
+                        {row.year_founded || 'No data available'}
+                      </td>
+                      <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
+                        ${row.aum}
+                      </td>
+                      <td
+                        className="px-3 py-2 text-sm text-gray-500 border border-black rounded-lg bg-white"
+                        style={{ height: maxRowHeight }}
+                      >
+                        <textarea
+                          value={row.customOverview}
+                          onChange={(e) => {
+                            const updated = [...data];
+                            updated[index].customOverview = e.target.value;
+                            setData(updated);
+
+                            // Auto-resize logic
+                            e.target.style.height = 'auto';
+                            e.target.style.height = `${e.target.scrollHeight}px`;
+                          }}
+                          className="w-full resize-none bg-white border-none focus:outline-none text-[12px] overflow-hidden"
+                          style={{ height: '100px' }} // or any base height
+                        />
+                      </td>
+                      <td className="text-sm text-gray-500 font-[10px] border border-black rounded-lg bg-white">
+                      {
+                        row.locations.length > 0 ? (
+                          <WorldMap locations={row.locations} />
+                        ) : (
+                          <span>No location data</span>
+                        )
+                      }
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };
