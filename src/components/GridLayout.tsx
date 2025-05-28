@@ -80,10 +80,6 @@ const GridLayout: React.FC = () => {
       "cib_ids": [
         "25financial.com",
         "acadviser.com",
-        "almanackip.com",
-        "25financial.com",
-        "acadviser.com",
-        "almanackip.com"
       ],
       "orient": "records"
     }
@@ -146,9 +142,13 @@ const GridLayout: React.FC = () => {
     }));
   };
 
-  const captureCellAsImage = async (td: HTMLElement): Promise<string> => {
-    const canvas = await html2canvas(td, { scale: 2 });
-    return canvas.toDataURL('image.png');
+  const captureCellAsImage = async (td: HTMLElement): Promise<any> => {
+    const canvas = await html2canvas(td.firstChild as HTMLElement, { scale: 2 });
+    
+    return {
+      data: canvas.toDataURL('image.png'),
+      height: canvas.height
+    };
   }
 
   const isVisualCell = (td: HTMLElement): boolean => {
@@ -176,118 +176,143 @@ const GridLayout: React.FC = () => {
         color: '000000',
         align: 'left',
         valign: 'middle',
-        fill: { color: 'F1F1F1' }, // light gray background
-        line: { color: 'CCCCCC' }, // optional border
       });
       currentX += colWidths[i];
     }
   }
 
   const exportToPPTx = async () => {
-      const pptx = new pptxgen();
+    const pptx = new pptxgen();
 
-      setLoading(true);
+    setLoading(true);
 
-      // Create slide
-      let slide = pptx.addSlide();
+    // Create slide
+    let slide = pptx.addSlide();
 
-      // Table-like data structure
-      const headers = [
-        { text: 'Company', options: { fontSize: 8, bold: true } },
-        { text: 'Headquarter', options: { fontSize: 8, bold: true } },
-        { text: 'Headquarter Detail', options: { fontSize: 8, bold: true } },
-        { text: 'Year Founded', options: { fontSize: 8, bold: true } },
-        { text: 'AUM', options: { fontSize: 8, bold: true } },
-        { text: 'Overview', options: { fontSize: 8, bold: true } },
-        { text: 'Graphic presence', options: { fontSize: 8, bold: true } },
-      ];
+    // Table-like data structure
+    const headers = [
+      { text: 'Company', options: { fontSize: 8, bold: true } },
+      { text: 'Headquarter', options: { fontSize: 8, bold: true } },
+      { text: 'Headquarter Detail', options: { fontSize: 8, bold: true } },
+      { text: 'Year Founded', options: { fontSize: 8, bold: true } },
+      { text: 'AUM', options: { fontSize: 8, bold: true } },
+      { text: 'Overview', options: { fontSize: 8, bold: true } },
+      { text: 'Graphic presence', options: { fontSize: 8, bold: true } },
+    ];
 
-      // Slide and margin config
-      const slideWidth = 10; // inches
-      const marginTop = 1.5;
-      const marginBottom = 1.5;
-      const marginLeft = 1.1;
-      const marginRight = 1.1;
-      const usableWidth = slideWidth - marginLeft - marginRight;
+    const slideWidth = 10;
+    const marginLeft = 1.1;
+    const marginRight = 1.1;
+    const usableWidth = slideWidth - marginLeft - marginRight;
 
-      // Column width weights
-      const colWeights = [1.5, 1.7, 2.5, 1.7, 1.5, 5.0, 2.3];
-      const totalWeight = colWeights.reduce((a, b) => a + b, 0);
-      const colWidths = colWeights.map(w => (w / totalWeight) * usableWidth);
+    const colWeights = [1.5, 1.7, 2.5, 1.7, 1.5, 5.0, 2.3];
+    const totalWeight = colWeights.reduce((a, b) => a + b, 0);
+    const colWidths = colWeights.map(w => (w / totalWeight) * usableWidth);
 
-      const rowHeight = 0.8;
+    let currentY = 0.5;
+    const rowHeight = maxRowHeight * 0.009 + 0.1;
 
-      let currentY = 0.5;
+    addHeaders(slide, colWidths, marginLeft, currentY, headers);
 
-      addHeaders(slide, colWidths, marginLeft, currentY, headers)
-      currentY += 0.4;
+    slide.addShape(pptx.ShapeType.line, {
+      x: marginLeft,
+      y: currentY + 0.3,
+      w: usableWidth,
+      h: 0,
+      line: {
+        color: 'CCCCCC',
+        width: 1,
+        dashType: 'solid'
+      },
+    });
 
-      for (let rowIndex = 0; rowIndex < rowRefs.current.length; rowIndex ++) {
-        const row = rowRefs.current[rowIndex];
-        if (!row) continue;
+    currentY += 0.4;
 
-        let currentX = marginLeft;
+    for (let rowIndex = 0; rowIndex < rowRefs.current.length; rowIndex++) {
+      const row = rowRefs.current[rowIndex];
+      if (!row) continue;
 
-        for (let colIndex = 0; colIndex < row.cells.length; colIndex++)  {
-          const cell = row.cells[colIndex];
-          const width = colWidths[colIndex];
+      let currentX = marginLeft;
 
-          if (isVisualCell(cell)) {
-            const base64Image = await captureCellAsImage(cell);
-            slide.addImage({
-              data: base64Image,
-              x: currentX,
-              y: currentY,
-              w: width,
-              h: rowHeight,
-            });
-          } else if (isOverview(cell)) {
-            const textArea = cell.querySelector('textarea');
-            const textContent = textArea?.value || '';
+      for (let colIndex = 0; colIndex < row.cells.length; colIndex++) {
+        const cell = row.cells[colIndex];
+        const width = colWidths[colIndex];
 
-            slide.addText(textContent, {
-              x: currentX,
-              y: currentY + 0.1,
-              w: width,
-              h: rowHeight + 0.1,
-              fontSize: 8,
-              color: '000000',
-              align: 'left',
-              valign: 'middle',
-              autoFit: true,
-              shrinkText: true
-            });
-          }else {
-            const textContent = cell.innerText || '';
-            slide.addText(textContent, {
-              x: currentX,
-              y: currentY + 0.1,
-              w: width,
-              h: rowHeight - 0.1,
-              fontSize: 8,
-              color: '000000',
-              align: 'left',
-              valign: 'middle',
-            });
-          }
-          currentX += width;
+        if (isVisualCell(cell)) {
+          const base64Image = await captureCellAsImage(cell);
+          const imageHeight = (maxRowHeight < base64Image.height ? maxRowHeight : base64Image.height) * 0.009 - 0.1;
+          const imageY = currentY + (rowHeight - imageHeight) / 2;
+
+          console.log(imageHeight);
+          
+          slide.addImage({
+            data: base64Image.data,
+            x: currentX,
+            y: imageY,
+            w: width,
+            h: imageHeight,
+          });
+
+        } else if (isOverview(cell)) {
+          const textArea = cell.querySelector('textarea');
+          const textContent = textArea?.value || '';
+
+          slide.addText(textContent, {
+            x: currentX,
+            y: currentY - 0.1,
+            w: width,
+            h: rowHeight,
+            fontSize: 8,
+            color: '000000',
+            align: 'left',
+            valign: 'middle',
+          });
+
+        } else {
+          const textContent = cell.innerText || '';
+
+          slide.addText(textContent, {
+            x: currentX,
+            y: currentY,
+            w: width,
+            h: rowHeight,
+            fontSize: 8,
+            color: '000000',
+            align: 'left',
+            valign: 'middle',
+          });
         }
-        currentY += rowHeight + 0.5;
 
-        // Add new slide if needed
-        if (currentY > 5) {
-          slide = pptx.addSlide();
-          currentY = 0.5;
-          addHeaders(slide, colWidths, marginLeft, currentY, headers);
-          currentY += 0.4;
-        }
+        currentX += width;
       }
 
-      // Save the PPTX file
-      pptx.writeFile({ fileName: 'TableExport.pptx' });
+      slide.addShape(pptx.ShapeType.line, {
+        x: marginLeft,
+        y: currentY + rowHeight + 0.05,
+        w: usableWidth,
+        h: 0,
+        line: {
+          color: 'CCCCCC',
+          width: 1,
+          dashType: 'dash'
+        },
+      });
 
-      setLoading(false);
+      currentY += rowHeight + 0.1;
+
+      if (currentY > 5) {
+        slide = pptx.addSlide();
+        currentY = 0.5;
+        addHeaders(slide, colWidths, marginLeft, currentY, headers);
+        currentY += 0.4;
+      }
+    }
+
+    await pptx.writeFile({ fileName: 'TableExport.pptx' });
+
+    setLoading(false);
   };
+
 
 
   return (

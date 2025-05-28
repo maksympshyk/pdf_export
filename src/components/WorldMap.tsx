@@ -23,7 +23,7 @@ type GeographyType = {
 
 const WorldMap: React.FC<WorldMapProps> = ({ locations }) => {
     return (
-        <div className="bg-[#aeaeae] h-[100%]">
+        <div className="bg-[#aeaeae]">
             <ComposableMap
                 projection="geoMercator"
                 projectionConfig={{ 
