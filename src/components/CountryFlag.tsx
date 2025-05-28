@@ -6,11 +6,11 @@ interface CountryFlagProps {
   size?: number; // Optional size in pixels
 }
 
-const CountryFlag: React.FC<CountryFlagProps> = ({ countryCode, size = 64 }) => {
+const CountryFlag: React.FC<CountryFlagProps> = ({ countryCode }) => {
   return (
     <Flag
       code={countryCode.toUpperCase()}
-      style={{ width: `${size}px`, height: 'auto' }}
+      style={{ width: '100%', height: 'auto' }}
     />
   );
 };

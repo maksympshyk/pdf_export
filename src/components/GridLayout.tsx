@@ -80,6 +80,8 @@ const GridLayout: React.FC = () => {
       "cib_ids": [
         "25financial.com",
         "acadviser.com",
+        "25financial.com",
+        "acadviser.com"
       ],
       "orient": "records"
     }
@@ -205,12 +207,12 @@ const GridLayout: React.FC = () => {
     const marginRight = 1.1;
     const usableWidth = slideWidth - marginLeft - marginRight;
 
-    const colWeights = [1.5, 1.7, 2.5, 1.7, 1.5, 5.0, 2.3];
+    const colWeights = [1.5, 1.7, 2.5, 1.5, 1.4, 5.0, 2.7];
     const totalWeight = colWeights.reduce((a, b) => a + b, 0);
     const colWidths = colWeights.map(w => (w / totalWeight) * usableWidth);
 
-    let currentY = 0.5;
-    const rowHeight = maxRowHeight * 0.009 + 0.1;
+    let currentY = 1.0;
+    const rowHeight = maxRowHeight * 0.009;
 
     addHeaders(slide, colWidths, marginLeft, currentY, headers);
 
@@ -240,10 +242,11 @@ const GridLayout: React.FC = () => {
 
         if (isVisualCell(cell)) {
           const base64Image = await captureCellAsImage(cell);
-          const imageHeight = (maxRowHeight < base64Image.height ? maxRowHeight : base64Image.height) * 0.009 - 0.1;
+          const imageHeight = (maxRowHeight < base64Image.height ? maxRowHeight : base64Image.height) * 0.009 * 0.97;
           const imageY = currentY + (rowHeight - imageHeight) / 2;
 
-          console.log(imageHeight);
+          console.log('maxRowHeight:', maxRowHeight);
+          console.log('base64Image.height:', base64Image.height);
           
           slide.addImage({
             data: base64Image.data,
@@ -259,7 +262,7 @@ const GridLayout: React.FC = () => {
 
           slide.addText(textContent, {
             x: currentX,
-            y: currentY - 0.1,
+            y: currentY,
             w: width,
             h: rowHeight,
             fontSize: 8,
@@ -288,7 +291,7 @@ const GridLayout: React.FC = () => {
 
       slide.addShape(pptx.ShapeType.line, {
         x: marginLeft,
-        y: currentY + rowHeight + 0.05,
+        y: currentY + rowHeight,
         w: usableWidth,
         h: 0,
         line: {
@@ -298,13 +301,24 @@ const GridLayout: React.FC = () => {
         },
       });
 
-      currentY += rowHeight + 0.1;
+      currentY += rowHeight;
 
-      if (currentY > 5) {
+      if (currentY > 4) {
         slide = pptx.addSlide();
-        currentY = 0.5;
+        currentY = 1.0;
         addHeaders(slide, colWidths, marginLeft, currentY, headers);
-        currentY += 0.4;
+        currentY += 0.3;
+        slide.addShape(pptx.ShapeType.line, {
+          x: marginLeft,
+          y: currentY,
+          w: usableWidth,
+          h: 0,
+          line: {
+            color: 'CCCCCC',
+            width: 1,
+            dashType: 'solid'
+          },
+        });
       }
     }
 
