@@ -149,6 +149,7 @@ const GridLayout: React.FC = () => {
     
     return {
       data: canvas.toDataURL('image.png'),
+      width: canvas.width,
       height: canvas.height
     };
   }
@@ -212,7 +213,7 @@ const GridLayout: React.FC = () => {
     const colWidths = colWeights.map(w => (w / totalWeight) * usableWidth);
 
     let currentY = 1.0;
-    const rowHeight = maxRowHeight * 0.009;
+    const rowHeight = maxRowHeight * 0.007;
 
     addHeaders(slide, colWidths, marginLeft, currentY, headers);
 
@@ -228,7 +229,7 @@ const GridLayout: React.FC = () => {
       },
     });
 
-    currentY += 0.4;
+    currentY += 0.3;
 
     for (let rowIndex = 0; rowIndex < rowRefs.current.length; rowIndex++) {
       const row = rowRefs.current[rowIndex];
@@ -242,17 +243,21 @@ const GridLayout: React.FC = () => {
 
         if (isVisualCell(cell)) {
           const base64Image = await captureCellAsImage(cell);
-          const imageHeight = (maxRowHeight < base64Image.height ? maxRowHeight : base64Image.height) * 0.009 * 0.97;
+
+          const imageWidth = width < (base64Image.width * 0.007 * 0.97) ? width : (base64Image.width * 0.007 * 0.97)
+          const imageHeight = (maxRowHeight < base64Image.height ? maxRowHeight : base64Image.height) * 0.007 * 0.97;
+
           const imageY = currentY + (rowHeight - imageHeight) / 2;
 
-          console.log('maxRowHeight:', maxRowHeight);
-          console.log('base64Image.height:', base64Image.height);
+          console.log('width:', width);
+          console.log('base64Image.base64Image.width * 0.007 * 0.97:', base64Image.width * 0.007 * 0.97);
+          console.log('imageWidth:', imageWidth);
           
           slide.addImage({
             data: base64Image.data,
             x: currentX,
             y: imageY,
-            w: width,
+            w: imageWidth,
             h: imageHeight,
           });
 
@@ -393,25 +398,25 @@ const GridLayout: React.FC = () => {
               <table className="min-w-full border-separate border-spacing-2">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
+                    <th className="px-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
                       Company
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
+                    <th className="px-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
                       Headquarter
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
+                    <th className="px-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
                       Headquarter Detail
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
+                    <th className="px-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
                       Year founded
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
+                    <th className="px-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[70px]">
                       AUM
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[350px]">
+                    <th className="px-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[350px]">
                       Overview
                     </th>
-                    <th className="px-3 py-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[200px]">
+                    <th className="px-3 text-left text-xs font-[14px] font-bold text-gray-500 tracking-wider w-[200px]">
                       Geographic presence
                     </th>
                   </tr>
@@ -424,23 +429,23 @@ const GridLayout: React.FC = () => {
                         if (el) rowRefs.current[index] = el;
                       }}
                     >
-                      <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
+                      <td className="px-3 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
                         {row.company}
                       </td>
-                      <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white px-10">
+                      <td className="px-6 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white px-10">
                         <CountryFlag countryCode='us' />
                       </td>
-                      <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
+                      <td className="px-3 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
                         {row.headquarter_detail || 'No data available'}
                       </td>
-                      <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
+                      <td className="px-3 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
                         {row.year_founded || 'No data available'}
                       </td>
-                      <td className="px-3 py-2 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
+                      <td className="px-3 text-sm text-gray-500 text-[12px] border border-black rounded-lg bg-white">
                         ${row.aum}
                       </td>
                       <td
-                        className="px-3 py-2 text-sm text-gray-500 border border-black rounded-lg bg-white"
+                        className="px-3 text-sm text-gray-500 border border-black rounded-lg bg-white"
                         style={{ height: maxRowHeight }}
                       >
                         <textarea
