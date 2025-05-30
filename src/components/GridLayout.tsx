@@ -213,7 +213,7 @@ const GridLayout: React.FC = () => {
     const colWidths = colWeights.map(w => (w / totalWeight) * usableWidth);
 
     let currentY = 1.0;
-    const rowHeight = maxRowHeight * 0.007;
+    const rowHeight = maxRowHeight * 0.0065;
 
     addHeaders(slide, colWidths, marginLeft, currentY, headers);
 
