@@ -28,7 +28,7 @@ const WorldMap: React.FC<WorldMapProps> = ({ locations }) => {
                 projection="geoMercator"
                 projectionConfig={{ 
                     center: [-10, 20], // Adjust the center of the map
-                    scale: 150 // Adjust the scale for better visibility
+                    // scale: 150
                 }}
             >
                 <Geographies geography={features} stroke="#FFF">

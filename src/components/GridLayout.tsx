@@ -6,7 +6,96 @@ import { exportToPPTx } from '../services/PPTExportService';
 import { CheckboxItem, CompanyRow } from '../types';
 
 const GridLayout: React.FC = () => {
-  const [checkboxes, setCheckboxes] = useState<CheckboxItem[]>([ /* same items */ ]);
+  const [checkboxes, setCheckboxes] = useState<CheckboxItem[]>([
+    {
+      id: '1',
+      label: 'Company name',
+      checkedColumns: true,
+      checkedBullets: false,
+      inColumns: true,
+      inBullets: false
+    },
+    {
+      id: '2',
+      label: 'Map',
+      checkedColumns: true,
+      checkedBullets: false,
+      inColumns: true,
+      inBullets: false
+    },
+    {
+      id: '3',
+      label: 'HQ country',
+      checkedColumns: true,
+      checkedBullets: false,
+      inColumns: true,
+      inBullets: false
+    },
+    {
+      id: '4',
+      label: 'HQ detail',
+      checkedColumns: true,
+      checkedBullets: true,
+      inColumns: true,
+      inBullets: true
+    },
+    {
+      id: '5',
+      label: 'Founding year',
+      checkedColumns: true,
+      checkedBullets: true,
+      inColumns: true,
+      inBullets: true
+    },
+    {
+      id: '6',
+      label: 'AUM/AUM detail',
+      checkedColumns: true,
+      checkedBullets: true,
+      inColumns: true,
+      inBullets: true
+    },
+    {
+      id: '7',
+      label: 'Products/solutions',
+      checkedColumns: false,
+      checkedBullets: true,
+      inColumns: false,
+      inBullets: true
+    },
+    {
+      id: '8',
+      label: 'Client detail',
+      checkedColumns: false,
+      checkedBullets: true,
+      inColumns: false,
+      inBullets: true
+    },
+    {
+      id: '9',
+      label: 'Location detail',
+      checkedColumns: false,
+      checkedBullets: true,
+      inColumns: false,
+      inBullets: true
+    },
+    {
+      id: '10',
+      label: 'Key management',
+      checkedColumns: false,
+      checkedBullets: true,
+      inColumns: false,
+      inBullets: true
+    },
+    {
+      id: '11',
+      label: 'Blank field for entry',
+      checkedColumns: false,
+      checkedBullets: true,
+      inColumns: false,
+      inBullets: true
+    },
+  ]);
   const [data, setData] = useState<CompanyRow[]>([]);
   const [loading, setLoading] = useState(false);
   const rowRefs = useRef<HTMLTableRowElement[]>([]);
@@ -55,7 +144,7 @@ const GridLayout: React.FC = () => {
       {loading ? <h1>Loading</h1> : <button onClick={handleExport}>Export to PPTX</button>}
       <div className="max-w-[2000px] mx-auto grid grid-cols-5 gap-2">
         <CheckboxPanel checkboxes={checkboxes} onChange={handleCheckboxChange} />
-        <CompanyTable data={data} rowRefs={rowRefs} maxRowHeight={maxRowHeight} />
+        <CompanyTable checkboxes={checkboxes} data={data} rowRefs={rowRefs} maxRowHeight={maxRowHeight} />
       </div>
     </div>
   );
