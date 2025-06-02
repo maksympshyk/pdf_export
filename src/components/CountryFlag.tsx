@@ -11,7 +11,7 @@ const CountryFlag: React.FC<CountryFlagProps> = ({ countryCode }) => {
     <Flag
       code={countryCode.toUpperCase()}
       style={{ 
-        marginLeft: '10px',
+        // marginLeft: '5px',
         width: '65px', 
         height: '25px'
       }}
