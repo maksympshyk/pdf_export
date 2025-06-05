@@ -100,7 +100,7 @@ const CompanyTable: React.FC<CompanyTableProps> = ({ checkboxes, data, rowRefs, 
               {
                 checkboxes[1].checkedColumns && (
                   <td className="text-sm text-gray-500 font-[10px] border border-black rounded-lg bg-white">
-                    {row.locations.length > 0 ? <WorldMap locations={row.locations} /> : <span>No location data</span>}
+                    {row.locations.length > 0 ? <WorldMap locations={row.locations} midLat={row.midLat} midLng={row.midLng} scale={row.zoom}  /> : <span>No location data</span>}
                   </td>
                 )
               }

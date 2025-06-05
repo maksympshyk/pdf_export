@@ -11,7 +11,7 @@ export interface CheckboxItem {
 
 export interface Overview {
   hq_detail: string | null;
-  founding_year: string | null;
+  // founding_year: string | null;
   AUM_detail: string | null;
   client_detail: string | null;
   location_detail: string | null;
@@ -31,6 +31,9 @@ export interface CompanyRow {
   aum: string;
   customOverview: string;
   locations: Location[];
+  midLat: number;
+  midLng: number;
+  zoom: number;
 }
 
 export type HAlign = 'left' | 'center' | 'right';

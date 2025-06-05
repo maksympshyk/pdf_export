@@ -12,8 +12,8 @@ export const getCountryISO3 = (country_id: number) => {
     return "";
 }
 
-export const renderOverviewAsText = (overview: { hq_detail: any; founding_year: any; AUM_detail: any; client_detail: any; location_detail: any; }) => {
-    return `${overview.AUM_detail ? `• ${overview.AUM_detail}` : ''}${overview.client_detail ? `\n• ${overview.client_detail}` : ''}${overview.founding_year ? `\n• ${overview.founding_year}` : ''}${overview.hq_detail ? `\n• ${overview.hq_detail}` : ''}${overview.location_detail ? `\n• ${overview.location_detail}` : ''}`;
+export const renderOverviewAsText = (overview: { AUM_detail: any; location_detail: any; }) => {
+    return `${overview.AUM_detail ? `• ${overview.AUM_detail}` : ''}${overview.location_detail ? `\n• ${overview.location_detail}` : ''}`;
 };
 
 export const formatNumber = (num: number) => {

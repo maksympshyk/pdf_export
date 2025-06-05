@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ComposableMap, Geographies, Geography, Marker } from "react-simple-maps";
 import features from '../data/features.json';
 import { geoCentroid } from "d3-geo";
@@ -13,6 +13,9 @@ type Location = {
 
 interface WorldMapProps {
     locations: Location[];
+    midLat: number;
+    midLng: number;
+    scale: number;
 }
 
 type GeographyType = {
@@ -21,14 +24,19 @@ type GeographyType = {
   // Add more if needed
 };
 
-const WorldMap: React.FC<WorldMapProps> = ({ locations }) => {
+const WorldMap: React.FC<WorldMapProps> = ({ locations, midLat, midLng, scale }) => {
+    useEffect(() => {
+        console.log('midLat:', (midLat));
+        console.log('midLng:', (midLng));
+    }, []);
+
     return (
         <div className="bg-[#aeaeae]">
             <ComposableMap
                 projection="geoMercator"
                 projectionConfig={{ 
-                    center: [-10, 20], // Adjust the center of the map
-                    // scale: 150
+                    center: [midLng, midLat], // Adjust the center of the map
+                    scale: scale * 70
                 }}
             >
                 <Geographies geography={features} stroke="#FFF">

@@ -41,10 +41,20 @@ export const useFetchCompanyData = () => {
 
     return await Promise.all(
       response.data.map(async (row: any) => {
+        console.log(row);
         const locationResponse = await axios.get(
           `https://dataplatform.synergy-impact.de/companies/get_company_locations?cib_id=${row.cib_id}&orient=records`,
           { headers }
         );
+
+        const mapDataResponse = await axios.post(
+          'https://dataplatform.synergy-impact.de/company_specific_info/get_map_for_cib_ids',
+          {
+            cib_ids: [row.cib_id],
+            orient: "records"
+          },
+          {headers}
+        )
 
         return {
           company: row.company_name,
@@ -53,17 +63,20 @@ export const useFetchCompanyData = () => {
           year_founded: 'Founded in 1997', // You can replace with actual data
           aum: `${row.AUM}bn`,
           customOverview: renderOverviewAsText({
-            hq_detail: row.hq_source_complete || null,
-            founding_year: row.foundingyear_HQ_combined_source_complete || null,
+            // hq_detail: row.hq_source_complete || null,
+            // founding_year: row.foundingyear_HQ_combined_source_complete || null,
             AUM_detail: row.AUM_detail || null,
-            client_detail: row.client_summary_source_complete || null,
+            // client_detail: row.client_summary_source_complete || null,
             location_detail: row.locations_text || null,
           }),
           locations: locationResponse.data.map((loc: any) => ({
             lat: loc.lat,
             long: loc.long,
             country: getCountryISO3(loc.country_id)
-          }))
+          })),
+          midLat: mapDataResponse.data[0].mid_lat,
+          midLng: mapDataResponse.data[0].mid_lng,
+          zoom: mapDataResponse.data[0].zoom,
         };
       })
     );
