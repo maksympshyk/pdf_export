@@ -25,11 +25,6 @@ type GeographyType = {
 };
 
 const WorldMap: React.FC<WorldMapProps> = ({ locations, midLat, midLng, scale }) => {
-    useEffect(() => {
-        console.log('midLat:', (midLat));
-        console.log('midLng:', (midLng));
-    }, []);
-
     return (
         <div className="bg-[#aeaeae]">
             <ComposableMap

@@ -41,7 +41,6 @@ export const useFetchCompanyData = () => {
 
     return await Promise.all(
       response.data.map(async (row: any) => {
-        console.log(row);
         const locationResponse = await axios.get(
           `https://dataplatform.synergy-impact.de/companies/get_company_locations?cib_id=${row.cib_id}&orient=records`,
           { headers }

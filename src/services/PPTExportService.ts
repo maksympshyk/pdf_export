@@ -67,7 +67,7 @@ export const exportToPPTx = async (
     return {
       data: canvas,
       width: element.offsetWidth,
-      height: element.offsetHeight
+      height: (element.offsetHeight > 150 ? 150 : element.offsetHeight)
     }
   };
 
